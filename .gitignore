@@ -1,50 +1,18 @@
-# Virtual environment
 venv/
 .venv/
 env/
 .env/
-
-# Byte-code files
 *.pyc
 __pycache__/
-
-# Jupyter Notebook specific files
 .ipynb_checkpoints/
-*.ipynb_checkpoints/ # In case they are nested in subdirectories
-
-# IDE specific files (e.g., VS Code)
+*.ipynb_checkpoints/
 .vscode/
-
-# Operating System files
-.DS_Store # macOS
-Thumbs.db # Windows
-
-# Data files (if they are large or sensitive, otherwise you can remove this)
-# If your data/ folder contains very large datasets, you might want to ignore them
-# and use Git LFS (Large File Storage) or just store a small sample.
-# For now, it's probably fine to keep `data/` in Git for the Telco dataset.
-# If the data file gets too big, uncomment this or specific files:
-# data/
-
-# Model files (if they get very large, use Git LFS later or ignore)
-# For now, the .joblib file might be small enough, but good to know
-# for larger models.
-# models/*.joblib
-# models/*.pkl
-
-# Logs
+.DS_Store
+Thumbs.db
 *.log
 logs/
-
-# Database files (if you use SQLite locally)
-*.sqlite3
-*.db
-
-# Environment variables files
 .env
 .flaskenv
-
-# Python development
 *.egg-info/
 dist/
 build/

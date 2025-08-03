@@ -5,33 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Churn Prediction</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="number"], select { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        #predictionResult { margin-top: 20px; padding: 10px; border: 1px solid #eee; background-color: #f9f9f9; border-radius: 4px; }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 700px; margin: auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-color: #fff; }
+        h1 { text-align: center; color: #0056b3; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="number"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-6.5C264.8%2061%20235.8%200%20146.2%200S27.2%2061%2018.6%2062.9c-4.5%201.2-9%203.4-12.7%206.5L0%2084.7l146.2%20146.2L292.4%2084.7l-5.4-15.3z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover { background-color: #0056b3; }
+        #predictionResult {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            background-color: #e9f7ef;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #28a745;
+        }
+        #predictionResult.error {
+            background-color: #f7e9e9;
+            color: #dc3545;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Customer Churn Prediction</h1>
         <form id="churnForm">
-            <label for="tenure">Tenure (months):</label>
-            <input type="number" id="tenure" name="tenure" value="12" required><br>
+            <div class="form-group">
+                <label for="tenure">Tenure (months):</label>
+                <input type="number" id="tenure" name="tenure" value="12" required>
+            </div>
 
-            <label for="monthlyCharges">Monthly Charges:</label>
-            <input type="number" step="0.01" id="monthlyCharges" name="MonthlyCharges" value="75.0" required><br>
+            <div class="form-group">
+                <label for="monthlyCharges">Monthly Charges:</label>
+                <input type="number" step="0.01" id="monthlyCharges" name="MonthlyCharges" value="75.0" required>
+            </div>
 
-            <label for="totalCharges">Total Charges:</label>
-            <input type="number" step="0.01" id="totalCharges" name="TotalCharges" value="900.0" required><br>
+            <div class="form-group">
+                <label for="totalCharges">Total Charges:</label>
+                <input type="number" step="0.01" id="totalCharges" name="TotalCharges" value="900.0" required>
+            </div>
 
-            <label for="gender">Gender:</label>
-            <select id="gender" name="gender">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select><br>
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Partner">Partner:</label>
+                <select id="Partner" name="Partner">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Contract">Contract:</label>
+                <select id="Contract" name="Contract">
+                    <option value="Month-to-month">Month-to-month</option>
+                    <option value="One year">One year</option>
+                    <option value="Two year">Two year</option>
+                </select>
+            </div>
 
             <button type="submit">Get Churn Prediction</button>
         </form>
@@ -42,52 +108,44 @@
 
     <script>
         document.getElementById('churnForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault();
 
             const form = event.target;
             const formData = new FormData(form);
             const data = {};
-            for (const [key, value] obfuscated) {
-                // Simple type conversion for example, adjust based on your actual features
-                if (key === 'tenure' || key === 'SeniorCitizen') {
+
+            for (const [key, value] of formData.entries()) {
+                if (['tenure', 'SeniorCitizen'].includes(key)) {
                     data[key] = parseInt(value);
-                } else if (key === 'MonthlyCharges' || key === 'TotalCharges' || key === 'Charge_per_Tenure') {
-                     data[key] = parseFloat(value);
+                } else if (['MonthlyCharges', 'TotalCharges', 'Charge_per_Tenure'].includes(key)) {
+                    data[key] = parseFloat(value);
                 } else {
                     data[key] = value;
                 }
             }
 
-            // Add Charge_per_Tenure calculation for the demo,
-            // as it's a derived feature needed by your model's preprocessor.
-            // In a real app, this calculation would also be handled backend.
-            if (data.tenure === 0) {
-                data.Charge_per_Tenure = 0.0;
-            } else {
-                data.Charge_per_Tenure = data.TotalCharges / data.tenure;
-            }
-
-            // Add dummy/default values for other categorical features your model expects
-            // These MUST match the features in X_train and their expected format
-            // You'll need to expand this part significantly for a complete form
-            data.customerID = "DEMO-ID";
-            data.SeniorCitizen = data.SeniorCitizen || 0; // Default to 0 if not provided
-            data.Partner = data.Partner || "No";
+            data.customerID = data.customerID || "DEMO-ID";
+            data.SeniorCitizen = data.SeniorCitizen || 0;
             data.Dependents = data.Dependents || "No";
             data.PhoneService = data.PhoneService || "Yes";
-            data.MultipleLines = data.MultipleLines || "No phone service"; // Or "No"
-            data.InternetService = data.InternetService || "DSL"; // Or "Fiber optic" etc.
+            data.MultipleLines = data.MultipleLines || "No";
+            data.InternetService = data.InternetService || "Fiber optic";
             data.OnlineSecurity = data.OnlineSecurity || "No";
             data.OnlineBackup = data.OnlineBackup || "No";
             data.DeviceProtection = data.DeviceProtection || "No";
             data.TechSupport = data.TechSupport || "No";
             data.StreamingTV = data.StreamingTV || "No";
             data.StreamingMovies = data.StreamingMovies || "No";
-            data.Contract = data.Contract || "Month-to-month";
-            data.PaperlessBilling = data.PaperlessBilling || "No";
+            data.PaperlessBilling = data.PaperlessBilling || "Yes";
             data.PaymentMethod = data.PaymentMethod || "Electronic check";
 
-            console.log("Sending data:", data); // For debugging
+            if (data.tenure === 0) {
+                data.Charge_per_Tenure = 0.0;
+            } else {
+                data.Charge_per_Tenure = data.TotalCharges / data.tenure;
+            }
+
+            console.log("Sending data:", data);
 
             const response = await fetch('/predict', {
                 method: 'POST',
@@ -99,10 +157,13 @@
 
             const result = await response.json();
             const resultDiv = document.getElementById('predictionResult');
+
             if (response.ok) {
                 resultDiv.innerHTML = `<strong>Prediction:</strong> ${result.churn_prediction}<br><strong>Probability:</strong> ${result.churn_probability.toFixed(4)}`;
+                resultDiv.className = 'predictionResult';
             } else {
-                resultDiv.innerHTML = `<strong>Error:</strong> ${result.error}`;
+                resultDiv.innerHTML = `<strong>Error:</strong> ${result.error || 'An unknown error occurred.'}`;
+                resultDiv.className = 'predictionResult error';
             }
         });
     </script>

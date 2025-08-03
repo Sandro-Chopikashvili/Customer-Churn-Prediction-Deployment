@@ -1,0 +1,14 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+venv/
+.venv/
+.ipynb_checkpoints/
+*.ipynb
+*.log
+logs/
+.env
+.flaskenv
+.vscode/
+Thumbs.db
