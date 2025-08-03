@@ -8,8 +8,6 @@ Experience the live application:
 
 ![Customer Churn Prediction Demo GIF](Recording2025-08-03115144.gif)
 
-*(Ensure this GIF is uploaded to your GitHub repository in a suitable location, and update the path above if needed.)*
-
 ## Project Components
 
 This project is structured around key components of an ML application lifecycle:
