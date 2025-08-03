@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="number"], select { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        #predictionResult { margin-top: 20px; padding: 10px; border: 1px solid #eee; background-color: #f9f9f9; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Churn Prediction</h1>
+        <form id="churnForm">
+            <label for="tenure">Tenure (months):</label>
+            <input type="number" id="tenure" name="tenure" value="12" required><br>
+
+            <label for="monthlyCharges">Monthly Charges:</label>
+            <input type="number" step="0.01" id="monthlyCharges" name="MonthlyCharges" value="75.0" required><br>
+
+            <label for="totalCharges">Total Charges:</label>
+            <input type="number" step="0.01" id="totalCharges" name="TotalCharges" value="900.0" required><br>
+
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select><br>
+
+            <button type="submit">Get Churn Prediction</button>
+        </form>
+        <div id="predictionResult">
+            Prediction will appear here...
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('churnForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {};
+            for (const [key, value] obfuscated) {
+                // Simple type conversion for example, adjust based on your actual features
+                if (key === 'tenure' || key === 'SeniorCitizen') {
+                    data[key] = parseInt(value);
+                } else if (key === 'MonthlyCharges' || key === 'TotalCharges' || key === 'Charge_per_Tenure') {
+                     data[key] = parseFloat(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+
+            // Add Charge_per_Tenure calculation for the demo,
+            // as it's a derived feature needed by your model's preprocessor.
+            // In a real app, this calculation would also be handled backend.
+            if (data.tenure === 0) {
+                data.Charge_per_Tenure = 0.0;
+            } else {
+                data.Charge_per_Tenure = data.TotalCharges / data.tenure;
+            }
+
+            // Add dummy/default values for other categorical features your model expects
+            // These MUST match the features in X_train and their expected format
+            // You'll need to expand this part significantly for a complete form
+            data.customerID = "DEMO-ID";
+            data.SeniorCitizen = data.SeniorCitizen || 0; // Default to 0 if not provided
+            data.Partner = data.Partner || "No";
+            data.Dependents = data.Dependents || "No";
+            data.PhoneService = data.PhoneService || "Yes";
+            data.MultipleLines = data.MultipleLines || "No phone service"; // Or "No"
+            data.InternetService = data.InternetService || "DSL"; // Or "Fiber optic" etc.
+            data.OnlineSecurity = data.OnlineSecurity || "No";
+            data.OnlineBackup = data.OnlineBackup || "No";
+            data.DeviceProtection = data.DeviceProtection || "No";
+            data.TechSupport = data.TechSupport || "No";
+            data.StreamingTV = data.StreamingTV || "No";
+            data.StreamingMovies = data.StreamingMovies || "No";
+            data.Contract = data.Contract || "Month-to-month";
+            data.PaperlessBilling = data.PaperlessBilling || "No";
+            data.PaymentMethod = data.PaymentMethod || "Electronic check";
+
+            console.log("Sending data:", data); // For debugging
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            const resultDiv = document.getElementById('predictionResult');
+            if (response.ok) {
+                resultDiv.innerHTML = `<strong>Prediction:</strong> ${result.churn_prediction}<br><strong>Probability:</strong> ${result.churn_probability.toFixed(4)}`;
+            } else {
+                resultDiv.innerHTML = `<strong>Error:</strong> ${result.error}`;
+            }
+        });
+    </script>
+</body>
+</html>
